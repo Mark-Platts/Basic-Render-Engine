@@ -6,3 +6,7 @@ body {
 canvas {
     background-color: #353535;
 }
+
+canvas:hover {
+    cursor: crosshair;
+}

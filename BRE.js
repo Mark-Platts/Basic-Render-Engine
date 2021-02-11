@@ -1,4 +1,6 @@
 //stored variables
+const pi = Math.PI;
+
 let coords = [[2,2,2],[-2,2,2],[2,-2,2],[2,2,-2],[-2,-2,2],[-2,2,-2],[2,-2,-2],[-2,-2,-2]];
 let lines = [[4,1],[1,0],[0,2],[2,4],[4,7],[2,6],[0,3],[1,5],[6,7],[7,5],[5,3],[3,6]];
 let biggestMag = 0;
@@ -9,6 +11,27 @@ let winWidth = 0;
 
 let perspectiveEnabled = false; //This will decide whether or not to use perspective during rendering
 
+function perspectiveChange() {
+    if (perspectiveEnabled == false) {
+        perspectiveEnabled = true;
+    }
+    else if (perspectiveEnabled == true) {
+        perspectiveEnabled = false;
+    }
+    renderLines();
+}
+
+let followEnabled = true; //This will let the shape keep facing the mouse curser
+
+function followChange() {
+    if (followEnabled == false) {
+        followEnabled = true;
+    }
+    else if (followEnabled == true) {
+        followEnabled = false;
+    }
+    renderLines();
+}
 
 
 
@@ -30,6 +53,20 @@ function vecMag(vec) {
         hold += vec[i]**2;
     }
     return (hold)**0.5;
+}
+
+//finds the difference between two vectors vec1 - vec2
+function vecDiff(vec1, vec2) {
+    let hold = [];
+    for (let i = 0; i < vec1.length; i++){
+        hold.push(vec1[i] - vec2[i]);
+    }
+    return hold;
+}
+
+//finds the distance between two vectors
+function vecDist(vec1, vec2) {
+    return vecMag(vecDiff(vec1, vec2));
 }
 
 //scalar multiply a vector
@@ -87,12 +124,74 @@ function setBiggestMag() {
             biggestMag = vecMag(coords[i]);
         }
     }
-    console.log(String(biggestMag))
+}
+
+//Takes coorda and rotates them in the yz-plane
+function rotYZ(coords, theta) {
+    for (let i = 0; i < coords.length; i++){
+        let y = coords[i][1];
+        let z = coords[i][2];
+        coords[i][1] = y*Math.cos(theta) - z*Math.sin(theta);
+        coords[i][2] = y*Math.sin(theta) + z*Math.cos(theta);
+    }
+}
+function doRotYZ() {
+    rotYZ(coords, pi/12);
+    renderLines();
+}
+
+//Takes coorda and rotates them in the xz-plane
+function rotXZ(coords, theta) {
+    for (let i = 0; i < coords.length; i++){
+        let x = coords[i][0];
+        let z = coords[i][2];
+        coords[i][0] = x*Math.cos(theta) - z*Math.sin(theta);
+        coords[i][2] = x*Math.sin(theta) + z*Math.cos(theta);
+    }
+}
+function doRotXZ() {
+    rotXZ(coords, pi/12);
+    renderLines();
+}
+
+//Takes coorda and rotates them in the xz-plane
+function rotXY(coords, theta) {
+    for (let i = 0; i < coords.length; i++){
+        let x = coords[i][0];
+        let y = coords[i][1];
+        coords[i][0] = x*Math.cos(theta) - y*Math.sin(theta);
+        coords[i][1] = x*Math.sin(theta) + y*Math.cos(theta);
+    }
+}
+function doRotXY() {
+    rotXY(coords, pi/12);
+    renderLines();
+}
+
+
+//executes the wheel up
+function doWheelUp() {
+    if (perspectiveEnabled == false) {
+        for (let i = 0; i < coords.length; i++){
+            coords[i] = vecScale(0.95, coords[i]);
+        }
+    }
+    renderLines();
+}
+
+//executes the wheel down
+function doWheelDown() {
+    if (perspectiveEnabled == false) {
+        for (let i = 0; i < coords.length; i++){
+            coords[i] = vecScale(1.05, coords[i]);
+        }
+    }
+    renderLines();
 }
 
 //Takes the coords and scales it to fit the canvas
-function scaleCoords() {
-    setBiggestMag()
+function scaleCoords(coords) {
+    setBiggestMag(coords)
     const canHeight = document.getElementById("mainCanvas").height;
     if (biggestMag > canHeight/2) {
         const scale = biggestMag/(canHeight/2);
@@ -118,11 +217,25 @@ function setPersp(canCenZ) {
     }
     else if (perspectiveEnabled == true) {
         for (let i = 0; i < coords.length; i++){
-            scale = 100/(canCenZ + coords[i][2]);
+            scale = 1-100/(canCenZ + coords[i][2]);
             hold.push(vecScale(scale,coords[i]));
         }
     }
     return hold;
+}
+
+//returns object with mouse position
+function getMousePos(canvas) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+      x: window.innerWidth - rect.left,
+      y: window.innerHeight - rect.top
+    };
+}
+
+//if follow is on, returns new coords that are shifted to face the mouse
+function doFollow(canvas) {
+    const pos = getMousePos(canvas);
 }
 
 //Takes the coord and line data and renders them to the canvas
@@ -134,12 +247,21 @@ function renderLines(){
     scaleCoords(coords); //resizes coords so that they will fit the canvas nicely
     finCoords = setPersp(canCenZ); //returns coords with possible perspective altering
     scaleCoords(finCoords);
+    createCanvas();
     const canvas = document.getElementById("mainCanvas");
     let ctx = canvas.getContext("2d");
+    //ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = "#FFFFFF";
     for (let i = 0; i < lines.length; i++){
         ctx.moveTo(canCenX + finCoords[lines[i][0]][0], canCenY + finCoords[lines[i][0]][1]);
         ctx.lineTo(canCenX + finCoords[lines[i][1]][0], canCenY + finCoords[lines[i][1]][1]);
         ctx.stroke();
     }
+    let pos = getMousePos(canvas);
+    let tx = pos.x;
+    let ty = pos.y;
+    ctx.font = "30px Arial";
+    ctx.fillText("Hello World", tx, ty);
 }
+
+
