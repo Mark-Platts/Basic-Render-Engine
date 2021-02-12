@@ -1,15 +1,15 @@
 //stored variables
 const pi = Math.PI;
 
+//storage for the cube coord and line data
 const cubeCoords = [[2,2,2],[-2,2,2],[2,-2,2],[2,2,-2],[-2,-2,2],[-2,2,-2],[2,-2,-2],[-2,-2,-2]];
 const cubeLines = [[4,1],[1,0],[0,2],[2,4],[4,7],[2,6],[0,3],[1,5],[6,7],[7,5],[5,3],[3,6]];
+//storage for the pyramid coord and line data
+const pyramidCoords = [[2,2,0],[-2,2,0],[2,-2,0],[-2,-2,0],[0,0,2]];
+const pyramidLines = [[0,1],[1,2],[2,3],[3,0],[0,4],[1,4],[2,4],[3,4]];
 
 let coords = [[2,2,2],[-2,2,2],[2,-2,2],[2,2,-2],[-2,-2,2],[-2,2,-2],[2,-2,-2],[-2,-2,-2]];
 let lines = [[4,1],[1,0],[0,2],[2,4],[4,7],[2,6],[0,3],[1,5],[6,7],[7,5],[5,3],[3,6]];
-let biggestMag = 0;
-
-let winHeight = 0;
-let winWidth = 0;
 
 
 let perspectiveEnabled = false; //This will decide whether or not to use perspective during rendering
@@ -38,7 +38,14 @@ function followChange() {
 
 
 
-
+//returns a copy of an array
+function arrCopy(arr){
+    let hold = [];
+    for (let i = 0; i < arr.length; i++){
+        hold.push(arr[i]);
+    }
+    return hold;
+}
 
 //Add two vectors
 function vecAdd(vec1, vec2) {
@@ -74,7 +81,7 @@ function vecDist(vec1, vec2) {
 
 //scalar multiply a vector
 function vecScale(scale, vec) {
-    hold = [];
+    let hold = [];
     for (let i = 0; i < vec.length; i++){
         hold.push(scale*vec[i]);
     }
@@ -99,18 +106,19 @@ function scaleCanvas() {
 //function that does everything that needs to be done after a window resize
 function windowResize() {
     scaleCanvas()
-    //renderLines()
+    render()
 }
 window.addEventListener('resize', windowResize);
 
 //sets biggestMag to current value
-function setBiggestMag() {
-    hold = 0;
+function biggestMag(coords) {
+    let hold = 0;
     for (let i = 0; i < coords.length; i++) {
-        if (vecMag(coords[i]) > biggestMag) {
-            biggestMag = vecMag(coords[i]);
+        if (vecMag(coords[i]) > hold) {
+            hold = vecMag(coords[i]);
         }
     }
+    return hold;
 }
 
 //Takes coorda and rotates them in the yz-plane
@@ -156,65 +164,23 @@ function doRotXY() {
 }
 
 
-//executes the wheel up
-function doWheelUp() {
-    if (perspectiveEnabled == false) {
-        for (let i = 0; i < coords.length; i++){
-            coords[i] = vecScale(0.95, coords[i]);
-        }
-    }
-    renderLines();
-}
-
-//executes the wheel down
-function doWheelDown() {
-    if (perspectiveEnabled == false) {
-        for (let i = 0; i < coords.length; i++){
-            coords[i] = vecScale(1.05, coords[i]);
-        }
-    }
-    renderLines();
-}
-
 //Takes the coords and scales it to fit the canvas
 function scaleCoords(coords) {
-    setBiggestMag(coords);
+    let hold = arrCopy(coords);
+    let hbm = biggestMag(hold);
     const canHeight = document.getElementById("mainCanvas").height;
-    if (biggestMag > 0.95*canHeight/2) {
-        const scale = biggestMag/(0.95*canHeight/2);
-        for (let i = 0; i < coords.length; i++){
-            coords[i] = vecScale(0.95*scale, coords[i]);
+    const canWidth = document.getElementById("mainCanvas").width;
+    const smallerDim = (canHeight < canWidth) ? canHeight : canWidth;
+    const scale = (0.95*smallerDim/2)/hbm;
+        for (let i = 0; i < hold.length; i++){
+            hold[i] = vecScale(scale, hold[i]);
         }
-    }
-    else if (biggestMag < 0.95*canHeight/2) {
-        const scale = (0.95*canHeight/2)/biggestMag;
-        for (let i = 0; i < coords.length; i++){
-            coords[i] = vecScale(0.95*scale, coords[i]);
-        }
-    }
+    return hold;
 }
 
-
-//Takes the coords and scales it to fit the canvas
-function OLDscaleCoords(coords) {
-    setBiggestMag(coords)
-    const canHeight = document.getElementById("mainCanvas").height;
-    if (biggestMag > canHeight/2) {
-        const scale = biggestMag/(canHeight/2);
-        for (let i = 0; i < coords.length; i++){
-            coords[i] = vecScale(0.95*scale, coords[i]);
-        }
-    }
-    else if (biggestMag < canHeight/10) {
-        const scale = (canHeight/2)/biggestMag;
-        for (let i = 0; i < coords.length; i++){
-            coords[i] = vecScale(0.95*scale, coords[i]);
-        }
-    }
-}
 
 //checks for perspective and returns new scaled coordinates
-function setPersp(canCenVec) {
+function setPersp(eyeVec, coords) {
     let hold = [];
     if (perspectiveEnabled == false) {
         for (let i = 0; i < coords.length; i++){
@@ -223,7 +189,7 @@ function setPersp(canCenVec) {
     }
     else if (perspectiveEnabled == true) {
         for (let i = 0; i < coords.length; i++){
-            let dist = vecDist(canCenVec, coords[i])
+            let dist = vecDist(eyeVec, coords, coords[i])
             console.log(dist);
             let scale = 1/dist;
             console.log(scale);
@@ -251,16 +217,11 @@ function doFollow(canvas) {
 function render(){
     const canCenX = document.getElementById("mainCanvas").width/2;
     const canCenY = document.getElementById("mainCanvas").height/2;
-    setBiggestMag();
-    scaleCoords(coords); //resizes coords so that they will fit the canvas nicely
-    setBiggestMag();
-    const canCenZ = 10*biggestMag;
-    const canCenVec = [canCenX, canCenY, canCenZ];
-    const eyeVec = [canCenX, canCenY, 0];
-    finCoords = setPersp(eyeVec); //returns coords with possible perspective altering
-    scaleCoords(finCoords);
-    createCanvas();
-    //ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const eyeZ = 10*biggestMag(coords);
+    const eyeVec = [canCenX, canCenY, eyeZ];
+    let perspCoords = setPersp(eyeVec, coords); //returns coords with possible perspective altering
+    let finCoords = scaleCoords(perspCoords); //resizes coords so that they will fit the canvas nicely
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = "#FFFFFF";
     for (let i = 0; i < lines.length; i++){
         ctx.moveTo(canCenX + finCoords[lines[i][0]][0], canCenY + finCoords[lines[i][0]][1]);

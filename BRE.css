@@ -14,3 +14,7 @@ canvas {
 canvas:hover {
     cursor: crosshair;
 }
+
+button {
+    margin: 5px;
+}
