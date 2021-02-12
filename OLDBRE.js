@@ -1,9 +1,6 @@
 //stored variables
 const pi = Math.PI;
 
-const cubeCoords = [[2,2,2],[-2,2,2],[2,-2,2],[2,2,-2],[-2,-2,2],[-2,2,-2],[2,-2,-2],[-2,-2,-2]];
-const cubeLines = [[4,1],[1,0],[0,2],[2,4],[4,7],[2,6],[0,3],[1,5],[6,7],[7,5],[5,3],[3,6]];
-
 let coords = [[2,2,2],[-2,2,2],[2,-2,2],[2,2,-2],[-2,-2,2],[-2,2,-2],[2,-2,-2],[-2,-2,-2]];
 let lines = [[4,1],[1,0],[0,2],[2,4],[4,7],[2,6],[0,3],[1,5],[6,7],[7,5],[5,3],[3,6]];
 let biggestMag = 0;
@@ -89,17 +86,33 @@ function getViewSizes() {
 
 
 //creates canvas and scales to the best fit
-function scaleCanvas() {
-    const scale = 1;
-    document.getElementById("mainCanvas").height = scale*window.innerHeight;
-    document.getElementById("mainCanvas").width = scale*window.innerWidth;
+function createCanvas() {
+    const scale = 0.96;
+    const canvasWidth = scale*window.innerWidth;
+    const canvasHeight = scale*window.innerHeight;
+    const hold = '<center><canvas id="mainCanvas" height='+canvasHeight+' width='+canvasWidth+'></canvas></center>';
+    document.getElementById("canvasHolder").innerHTML = hold;
 }
 
+//creates canvas and scales to the best 16:9 fit
+function OLDcreateCanvas() {
+    const scale = 0.95;
+    const innerWidth = scale*window.innerWidth;
+    const innerHeight = scale*window.innerHeight;
+    let canvasWidth = ((9/16)*innerWidth < innerHeight) ? innerWidth:(16/9)*innerHeight;
+    let canvasHeight = ((9/16)*innerWidth < innerHeight) ? (9/16)*innerWidth:innerHeight;
+    //if (innerWidth > 840 && innerHeight > 525) {
+    //    canvasWidth = 840;
+    //    canvasHeight = 525;
+    //}
+    const hold = '<canvas id="mainCanvas" height='+canvasHeight+' width='+canvasWidth+'></canvas>';
+    document.getElementById("canvasHolder").innerHTML = hold;
+}
 
 //function that does everything that needs to be done after a window resize
 function windowResize() {
-    scaleCanvas()
-    //renderLines()
+    createCanvas()
+    renderLines()
 }
 window.addEventListener('resize', windowResize);
 
@@ -248,7 +261,7 @@ function doFollow(canvas) {
 }
 
 //Takes the coord and line data and renders them to the canvas
-function render(){
+function renderLines(){
     const canCenX = document.getElementById("mainCanvas").width/2;
     const canCenY = document.getElementById("mainCanvas").height/2;
     setBiggestMag();
@@ -260,6 +273,8 @@ function render(){
     finCoords = setPersp(eyeVec); //returns coords with possible perspective altering
     scaleCoords(finCoords);
     createCanvas();
+    const canvas = document.getElementById("mainCanvas");
+    let ctx = canvas.getContext("2d");
     //ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = "#FFFFFF";
     for (let i = 0; i < lines.length; i++){

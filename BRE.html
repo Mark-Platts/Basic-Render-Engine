@@ -5,12 +5,8 @@
         <link rel="stylesheet" href="BRE.css">
     </head>
     <body>
-        <div id="canvasHolder">
-            <script>
-                createCanvas()
-                renderLines();
-            </script>
-        </div>
+
+        <canvas id="mainCanvas"></canvas>
 
         <div id="interaction">
             <button onclick="perspectiveChange()">Perspective on/off</button>
@@ -24,6 +20,13 @@
         <div id="info">
 
         </div>
+
+        <script>
+            scaleCanvas()
+            const canvas = document.getElementById("mainCanvas");
+            let ctx = canvas.getContext("2d");
+            // render();
+        </script>
 
     </body>
 </html>
