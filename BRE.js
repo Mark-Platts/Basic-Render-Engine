@@ -5,7 +5,7 @@ const pi = Math.PI;
 const cubeCoords = [[2,2,2],[-2,2,2],[2,-2,2],[2,2,-2],[-2,-2,2],[-2,2,-2],[2,-2,-2],[-2,-2,-2]];
 const cubeLines = [[4,1],[1,0],[0,2],[2,4],[4,7],[2,6],[0,3],[1,5],[6,7],[7,5],[5,3],[3,6]];
 //storage for the pyramid coord and line data
-const pyramidCoords = [[2,2,0],[-2,2,0],[2,-2,0],[-2,-2,0],[0,0,2]];
+const pyramidCoords = [[2,0,2],[2,0,-2],[-2,0,-2],[-2,0,2],[0,-2,0]];
 const pyramidLines = [[0,1],[1,2],[2,3],[3,0],[0,4],[1,4],[2,4],[3,4]];
 
 let coords = [[2,2,2],[-2,2,2],[2,-2,2],[2,2,-2],[-2,-2,2],[-2,2,-2],[2,-2,-2],[-2,-2,-2]];
@@ -21,7 +21,7 @@ function perspectiveChange() {
     else if (perspectiveEnabled == true) {
         perspectiveEnabled = false;
     }
-    renderLines();
+    render();
 }
 
 let followEnabled = true; //This will let the shape keep facing the mouse curser
@@ -33,10 +33,22 @@ function followChange() {
     else if (followEnabled == true) {
         followEnabled = false;
     }
-    renderLines();
+    render();
 }
 
+//selects the cube as the working shape
+function cubeSelect() {
+    coords = arrCopy(cubeCoords);
+    lines = arrCopy(cubeLines);
+    render();
+}
 
+//selects the pyramid as the working shape
+function pyramidSelect() {
+    coords = arrCopy(pyramidCoords);
+    lines = arrCopy(pyramidLines);
+    render();
+}
 
 //returns a copy of an array
 function arrCopy(arr){
@@ -132,7 +144,7 @@ function rotYZ(coords, theta) {
 }
 function doRotYZ() {
     rotYZ(coords, pi/12);
-    renderLines();
+    render();
 }
 
 //Takes coorda and rotates them in the xz-plane
@@ -146,7 +158,7 @@ function rotXZ(coords, theta) {
 }
 function doRotXZ() {
     rotXZ(coords, pi/12);
-    renderLines();
+    render();
 }
 
 //Takes coorda and rotates them in the xz-plane
@@ -160,7 +172,7 @@ function rotXY(coords, theta) {
 }
 function doRotXY() {
     rotXY(coords, pi/12);
-    renderLines();
+    render();
 }
 
 
@@ -180,7 +192,9 @@ function scaleCoords(coords) {
 
 
 //checks for perspective and returns new scaled coordinates
-function setPersp(eyeVec, coords) {
+//canDist is the distance from (0,0,0) to the center of the canvas
+//eyeDist is distance from the center of the canvas to the eye
+function setPersp(coords, canDist, eyeDist) {
     let hold = [];
     if (perspectiveEnabled == false) {
         for (let i = 0; i < coords.length; i++){
@@ -189,50 +203,37 @@ function setPersp(eyeVec, coords) {
     }
     else if (perspectiveEnabled == true) {
         for (let i = 0; i < coords.length; i++){
-            let dist = vecDist(eyeVec, coords, coords[i])
-            console.log(dist);
-            let scale = 1/dist;
-            console.log(scale);
-            hold.push(vecScale(scale,coords[i]));
+            let rastCoord = [];
+            let x = coords[i][0];
+            let y = coords[i][1];
+            let z = coords[i][2];
+            let t = (canDist - z)/(canDist + eyeDist - z);
+            rastCoord.push(x*(1-t));
+            rastCoord.push(y*(1-t));
+            hold.push(rastCoord);
         }
     }
     return hold;
 }
 
-//returns object with mouse position
-function getMousePos(canvas) {
-    var rect = canvas.getBoundingClientRect();
-    return {
-      x: window.innerWidth - rect.left,
-      y: window.innerHeight - rect.top
-    };
-}
-
-//if follow is on, returns new coords that are shifted to face the mouse
-function doFollow(canvas) {
-    const pos = getMousePos(canvas);
-}
 
 //Takes the coord and line data and renders them to the canvas
 function render(){
     const canCenX = document.getElementById("mainCanvas").width/2;
     const canCenY = document.getElementById("mainCanvas").height/2;
-    const eyeZ = 10*biggestMag(coords);
-    const eyeVec = [canCenX, canCenY, eyeZ];
-    let perspCoords = setPersp(eyeVec, coords); //returns coords with possible perspective altering
+    const bm = biggestMag(coords);
+    const eyeDist = 2*bm;
+    const canDist = 2*bm;
+    let perspCoords = setPersp(coords, canDist, eyeDist); //returns coords with possible perspective altering
     let finCoords = scaleCoords(perspCoords); //resizes coords so that they will fit the canvas nicely
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = "#FFFFFF";
     for (let i = 0; i < lines.length; i++){
+        ctx.beginPath();
         ctx.moveTo(canCenX + finCoords[lines[i][0]][0], canCenY + finCoords[lines[i][0]][1]);
         ctx.lineTo(canCenX + finCoords[lines[i][1]][0], canCenY + finCoords[lines[i][1]][1]);
         ctx.stroke();
     }
-    let pos = getMousePos(canvas);
-    let tx = pos.x;
-    let ty = pos.y;
-    ctx.font = "30px Arial";
-    ctx.fillText("Hello World", tx, ty);
 }
 
 
