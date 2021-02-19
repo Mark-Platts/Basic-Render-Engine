@@ -11,7 +11,7 @@
         <div id="interaction">
             <button onclick="perspectiveChange()">Perspective on/off</button>
             <button onclick="cubeSelect()">Cube</button>
-            <button onclick="pyramidSelect()">Pyramid</button>
+            <button onclick="tetraSelect()">Tetrahedron</button>
             <br>
             <button onclick="doRotYZ()">yz-plane 15 deg</button>
             <button onclick="doRotXZ()">xz-plane 15 deg</button>
@@ -26,7 +26,7 @@
             scaleCanvas();
             const canvas = document.getElementById("mainCanvas");
             let ctx = canvas.getContext("2d");
-            render();
+            render(coords);
             canvas.addEventListener('mousemove', function(evt) {
                 const bm = biggestMag(coords);
                 const canDist = 2*bm;

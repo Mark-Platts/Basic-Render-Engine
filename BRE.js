@@ -4,9 +4,9 @@ const pi = Math.PI;
 //storage for the cube coord and line data
 const cubeCoords = [[2,2,2],[-2,2,2],[2,-2,2],[2,2,-2],[-2,-2,2],[-2,2,-2],[2,-2,-2],[-2,-2,-2]];
 const cubeLines = [[4,1],[1,0],[0,2],[2,4],[4,7],[2,6],[0,3],[1,5],[6,7],[7,5],[5,3],[3,6]];
-//storage for the pyramid coord and line data
-const pyramidCoords = [[1,0,-1/(2**0.5)],[-1,0,-1/(2**0.5)],[0,1,1/(2**0.5)],[0,-1,1/(2**0.5)]];
-const pyramidLines = [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]];
+//storage for the tetrahedron coord and line data
+const tetraCoords = [[1,0,-1/(2**0.5)],[-1,0,-1/(2**0.5)],[0,1,1/(2**0.5)],[0,-1,1/(2**0.5)]];
+const tetraLines = [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]];
 
 let coords = [[2,2,2],[-2,2,2],[2,-2,2],[2,2,-2],[-2,-2,2],[-2,2,-2],[2,-2,-2],[-2,-2,-2]];
 let lines = [[4,1],[1,0],[0,2],[2,4],[4,7],[2,6],[0,3],[1,5],[6,7],[7,5],[5,3],[3,6]];
@@ -21,7 +21,7 @@ function perspectiveChange() {
     else if (perspectiveEnabled == true) {
         perspectiveEnabled = false;
     }
-    render();
+    render(coords);
 }
 
 let followEnabled = true; //This will let the shape keep facing the mouse curser
@@ -33,21 +33,21 @@ function followChange() {
     else if (followEnabled == true) {
         followEnabled = false;
     }
-    render();
+    render(coords);
 }
 
 //selects the cube as the working shape
 function cubeSelect() {
     coords = arrCopy(cubeCoords);
     lines = arrCopy(cubeLines);
-    render();
+    render(coords);
 }
 
-//selects the pyramid as the working shape
-function pyramidSelect() {
-    coords = arrCopy(pyramidCoords);
-    lines = arrCopy(pyramidLines);
-    render();
+//selects the tetrahedron as the working shape
+function tetraSelect() {
+    coords = arrCopy(tetraCoords);
+    lines = arrCopy(tetraLines);
+    render(coords);
 }
 
 //returns a copy of an array
@@ -132,7 +132,7 @@ function scaleCanvas() {
 //function that does everything that needs to be done after a window resize
 function windowResize() {
     scaleCanvas()
-    render()
+    render(coords)
 }
 window.addEventListener('resize', windowResize);
 
@@ -158,7 +158,7 @@ function rotYZ(coords, theta) {
 }
 function doRotYZ() {
     rotYZ(coords, pi/12);
-    render();
+    render(coords);
 }
 
 //Takes coorda and rotates them in the xz-plane
@@ -172,7 +172,7 @@ function rotXZ(coords, theta) {
 }
 function doRotXZ() {
     rotXZ(coords, pi/12);
-    render();
+    render(coords);
 }
 
 //Takes coorda and rotates them in the xz-plane
@@ -186,7 +186,7 @@ function rotXY(coords, theta) {
 }
 function doRotXY() {
     rotXY(coords, pi/12);
-    render();
+    render(coords);
 }
 
 
@@ -232,7 +232,7 @@ function setPersp(coords, canDist, eyeDist) {
 
 
 //Takes the coord and line data and renders them to the canvas
-function render(){
+function trender(coords){
     const canCenX = document.getElementById("mainCanvas").width/2;
     const canCenY = document.getElementById("mainCanvas").height/2;
     const bm = biggestMag(coords);
@@ -251,7 +251,7 @@ function render(){
 }
 
 //Takes the coord and line data and renders them to the canvas
-function trender(coords){
+function render(coords){
     const canCenX = document.getElementById("mainCanvas").width/2;
     const canCenY = document.getElementById("mainCanvas").height/2;
     const bm = biggestMag(coords);
@@ -302,7 +302,7 @@ function turnPoints(coords, px, py, canDist) {
     for (let i = 0; i < hold.length; i++){
         hold[i] = turnCoord(hold[i], units)
     }
-    trender(hold)
+    render(hold)
 }
 
 function testMouseFollow(canvas, coords, evt) {
