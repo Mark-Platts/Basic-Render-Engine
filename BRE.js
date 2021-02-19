@@ -191,13 +191,13 @@ function doRotXY() {
 
 
 //Takes the coords and scales it to fit the canvas
-function scaleCoords(coords) {
+function scaleCoords(coords, scalePerc) {
     let hold = arrCopy(coords);
     let hbm = biggestMag(hold);
     const canHeight = document.getElementById("mainCanvas").height;
     const canWidth = document.getElementById("mainCanvas").width;
     const smallerDim = (canHeight < canWidth) ? canHeight : canWidth;
-    const scale = (0.95*smallerDim/2)/hbm;
+    const scale = (scalePerc*smallerDim/2)/hbm;
         for (let i = 0; i < hold.length; i++){
             hold[i] = vecScale(scale, hold[i]);
         }
@@ -232,14 +232,14 @@ function setPersp(coords, canDist, eyeDist) {
 
 
 //Takes the coord and line data and renders them to the canvas
-function trender(coords){
+function render(coords){
     const canCenX = document.getElementById("mainCanvas").width/2;
     const canCenY = document.getElementById("mainCanvas").height/2;
-    const bm = biggestMag(coords);
-    const eyeDist = 2*bm;
-    const canDist = 2*bm;
-    let perspCoords = setPersp(coords, canDist, eyeDist); //returns coords with possible perspective altering
-    let finCoords = scaleCoords(perspCoords); //resizes coords so that they will fit the canvas nicely
+    let scaledCoords = scaleCoords(coords, 4); //resizes coords so that they will fit the canvas nicely
+    const bm = biggestMag(scaledCoords);
+    const eyeDist = bm;
+    const canDist = 4*bm;
+    let finCoords = setPersp(scaledCoords, canDist, eyeDist); //returns coords with possible perspective altering
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = "#FFFFFF";
     for (let i = 0; i < lines.length; i++){
@@ -251,14 +251,14 @@ function trender(coords){
 }
 
 //Takes the coord and line data and renders them to the canvas
-function render(coords){
+function trender(coords){
     const canCenX = document.getElementById("mainCanvas").width/2;
     const canCenY = document.getElementById("mainCanvas").height/2;
     const bm = biggestMag(coords);
     const eyeDist = 2*bm;
     const canDist = 2*bm;
     let perspCoords = setPersp(coords, canDist, eyeDist); //returns coords with possible perspective altering
-    let finCoords = scaleCoords(perspCoords); //resizes coords so that they will fit the canvas nicely
+    let finCoords = scaleCoords(perspCoords, 0.95); //resizes coords so that they will fit the canvas nicely
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = "#FFFFFF";
     for (let i = 0; i < lines.length; i++){
