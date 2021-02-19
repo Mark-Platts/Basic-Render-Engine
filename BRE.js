@@ -1,5 +1,14 @@
 //stored variables
 const pi = Math.PI;
+const goldenRatio = (1 + 5**0.5)/2;
+const gRR = 1/goldenRatio;
+
+//storage for the dodecahedron and line data
+const dodeCoords = [[1, 1, 1], [1, -1, 1], [-1, 1, 1], [-1, -1, 1], [1, 1, -1], [1, -1, -1], [-1, 1, -1], [-1, -1,- 1],
+    [0, (1 + gRR), (1 - gRR**2)],[0, -(1 + gRR), (1 - gRR**2)],[0, (1 + gRR), -(1 - gRR**2)],[0, -(1 + gRR), -(1 - gRR**2)],
+    [(1 + gRR), (1 - gRR**2), 0],[-(1 + gRR), (1 - gRR**2), 0],[(1 + gRR), -(1 - gRR**2), 0],[-(1 + gRR), -(1 - gRR**2), 0],
+    [(1 - gRR**2), 0, (1 + gRR)],[-(1 - gRR**2), 0, (1 + gRR)],[(1 - gRR**2), 0, -(1 + gRR)],[-(1 - gRR**2), 0, -(1 + gRR)]];
+const dodeLines = [[0, 8], [0, 12], [0, 16], [1, 9], [1, 14], [1, 16], [2, 8], [2, 13], [2, 17], [3, 9], [3, 15], [3, 17], [4, 10], [4, 12], [4, 18], [5, 11], [5, 14], [5, 18], [6, 10], [6, 13], [6, 19], [7, 11], [7, 15], [7, 19], [8, 10], [9, 11], [12, 14], [13, 15], [16, 17], [18, 19]];
 
 //storage for the cube coord and line data
 const cubeCoords = [[2,2,2],[-2,2,2],[2,-2,2],[2,2,-2],[-2,-2,2],[-2,2,-2],[2,-2,-2],[-2,-2,-2]];
@@ -47,6 +56,13 @@ function cubeSelect() {
 function tetraSelect() {
     coords = arrCopy(tetraCoords);
     lines = arrCopy(tetraLines);
+    render(coords);
+}
+
+//selects the dodecahedron as the working shape
+function dodeSelect() {
+    coords = arrCopy(dodeCoords);
+    lines = arrCopy(dodeLines);
     render(coords);
 }
 
@@ -235,7 +251,11 @@ function setPersp(coords, canDist, eyeDist) {
 function render(coords){
     const canCenX = document.getElementById("mainCanvas").width/2;
     const canCenY = document.getElementById("mainCanvas").height/2;
-    let scaledCoords = scaleCoords(coords, 4); //resizes coords so that they will fit the canvas nicely
+    //resizes coords so that they will fit the canvas nicely
+    let scaledCoords = scaleCoords(coords, 4);
+    if (perspectiveEnabled == false) {
+        scaledCoords = scaleCoords(coords, 0.95);
+    }
     const bm = biggestMag(scaledCoords);
     const eyeDist = bm;
     const canDist = 4*bm;
