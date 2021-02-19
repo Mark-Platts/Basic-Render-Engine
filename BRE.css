@@ -16,5 +16,10 @@ canvas:hover {
 }
 
 button {
+    background-color: #555555;
+    color: white;
+    cursor: pointer;
+    border: none;
     margin: 5px;
-}
+    padding: 5px;
+  }

@@ -27,6 +27,14 @@
             const canvas = document.getElementById("mainCanvas");
             let ctx = canvas.getContext("2d");
             render();
+            canvas.addEventListener('mousemove', function(evt) {
+                const bm = biggestMag(coords);
+                const canDist = 2*bm;
+                const mp = getMousePos(canvas, evt);
+                const canCenX = document.getElementById("mainCanvas").width/2;
+                const canCenY = document.getElementById("mainCanvas").height/2;
+                turnPoints(coords, mp[0]-canCenX, mp[1]-canCenY, canDist);
+            }, false);
         </script>
 
     </body>

@@ -5,14 +5,14 @@ const pi = Math.PI;
 const cubeCoords = [[2,2,2],[-2,2,2],[2,-2,2],[2,2,-2],[-2,-2,2],[-2,2,-2],[2,-2,-2],[-2,-2,-2]];
 const cubeLines = [[4,1],[1,0],[0,2],[2,4],[4,7],[2,6],[0,3],[1,5],[6,7],[7,5],[5,3],[3,6]];
 //storage for the pyramid coord and line data
-const pyramidCoords = [[2,0,2],[2,0,-2],[-2,0,-2],[-2,0,2],[0,-2,0]];
-const pyramidLines = [[0,1],[1,2],[2,3],[3,0],[0,4],[1,4],[2,4],[3,4]];
+const pyramidCoords = [[1,0,-1/(2**0.5)],[-1,0,-1/(2**0.5)],[0,1,1/(2**0.5)],[0,-1,1/(2**0.5)]];
+const pyramidLines = [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]];
 
 let coords = [[2,2,2],[-2,2,2],[2,-2,2],[2,2,-2],[-2,-2,2],[-2,2,-2],[2,-2,-2],[-2,-2,-2]];
 let lines = [[4,1],[1,0],[0,2],[2,4],[4,7],[2,6],[0,3],[1,5],[6,7],[7,5],[5,3],[3,6]];
 
 
-let perspectiveEnabled = false; //This will decide whether or not to use perspective during rendering
+let perspectiveEnabled = true; //This will decide whether or not to use perspective during rendering
 
 function perspectiveChange() {
     if (perspectiveEnabled == false) {
@@ -68,6 +68,15 @@ function vecAdd(vec1, vec2) {
     return hold;
 }
 
+//Returns dot product of two vectors
+function vecDot(vec1, vec2) {
+    let hold = 0;
+    for (let i = 0; i < vec1.length; i++){
+        hold += vec1[i]*vec2[i];
+    }
+    return hold;
+}
+
 //returns vector magnitude
 function vecMag(vec) {
     let hold = 0;
@@ -98,6 +107,11 @@ function vecScale(scale, vec) {
         hold.push(scale*vec[i]);
     }
     return hold;
+}
+
+//returns the cross product of two vectors
+function vecCross(vec1, vec2) {
+    return [vec1[1]*vec2[2]-vec1[2]*vec2[1], vec1[2]*vec2[0]-vec1[0]*vec2[2], vec1[0]*vec2[1]-vec1[1]*vec2[0]];
 }
 
 //returns array with [innerHeight, innerWidth]
@@ -236,4 +250,73 @@ function render(){
     }
 }
 
+//Takes the coord and line data and renders them to the canvas
+function trender(coords){
+    const canCenX = document.getElementById("mainCanvas").width/2;
+    const canCenY = document.getElementById("mainCanvas").height/2;
+    const bm = biggestMag(coords);
+    const eyeDist = 2*bm;
+    const canDist = 2*bm;
+    let perspCoords = setPersp(coords, canDist, eyeDist); //returns coords with possible perspective altering
+    let finCoords = scaleCoords(perspCoords); //resizes coords so that they will fit the canvas nicely
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "#FFFFFF";
+    for (let i = 0; i < lines.length; i++){
+        ctx.beginPath();
+        ctx.moveTo(canCenX + finCoords[lines[i][0]][0], canCenY + finCoords[lines[i][0]][1]);
+        ctx.lineTo(canCenX + finCoords[lines[i][1]][0], canCenY + finCoords[lines[i][1]][1]);
+        ctx.stroke();
+    }
+}
+
+
+//Takes a point on the canvas, returns new set of unit vectors, scale can change how big the canvas is relative to the shape (needs implementing)
+function turnUnits(px, py, canDist, scale) {
+    const pVec = [scale*px, scale*py, canDist]; //vector of mouse pointer (scale will go here if needs be)
+    const pMag = vecMag(pVec); //Finds magnitude
+    const kuVec = vecScale((1/pMag), pVec); //Tunrs pVec into a unit vector. This is the same as the k unit vector due to the rotation point being (0,0,0)
+    const kjCross = vecCross(kuVec, [0,1,0]);
+    const kjcMag = vecMag(kjCross);
+    const iuVec = vecScale((1/kjcMag), kjCross);
+    const juVec = vecCross(kuVec, iuVec);
+    return [iuVec, juVec, kuVec];
+}
+
+//Takes a coordinate and a set of unit vectors, rebuilds in the new basis
+function turnCoord(coord, units) {
+    const nx = vecScale(coord[0], units[0]);
+    const ny = vecScale(coord[1], units[1]);
+    const nz = vecScale(coord[2], units[2]);
+    let hold = vecAdd(vecAdd(nx, ny), nz);
+    if (coord.length == 4) {
+        return hold.push(coord[3]);
+    }
+    else {
+        return hold;
+    }
+}
+
+function turnPoints(coords, px, py, canDist) {
+    const units = turnUnits(px, py, canDist, 1/100);
+    let hold = arrCopy(coords);
+    for (let i = 0; i < hold.length; i++){
+        hold[i] = turnCoord(hold[i], units)
+    }
+    trender(hold)
+}
+
+function testMouseFollow(canvas, coords, evt) {
+    const bm = biggestMag(coords);
+    const canDist = 2*bm;
+    const mp = getMousePos(canvas, evt);
+    const canCenX = document.getElementById("mainCanvas").width/2;
+    const canCenY = document.getElementById("mainCanvas").height/2;
+    turnPoints(coords, mp[0] , mp[1] , canDist);
+}
+
+//returns object with mouse position
+function getMousePos(canvas, evt) {
+        var rect = canvas.getBoundingClientRect();
+        return [evt.clientX - rect.left, evt.clientY - rect.top];
+      }
 
