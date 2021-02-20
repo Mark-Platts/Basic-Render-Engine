@@ -319,9 +319,11 @@ function turnUnits(px, py, canDist, scale) {
     const pMag = vecMag(pVec); //Finds magnitude
     const kuVec = vecScale((1/pMag), pVec); //Tunrs pVec into a unit vector. This is the same as the k unit vector due to the rotation point being (0,0,0)
     const kjCross = vecCross(kuVec, [0,1,0]);
+    //const kjCross = vecCross([0,1,0], kuVec);
     const kjcMag = vecMag(kjCross);
     const iuVec = vecScale((1/kjcMag), kjCross);
-    const juVec = vecCross(kuVec, iuVec);
+    //const juVec = vecCross(kuVec, iuVec);
+    const juVec = vecCross(iuVec, kuVec);
     return [iuVec, juVec, kuVec];
 }
 
