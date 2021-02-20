@@ -1,7 +1,7 @@
 //stored variables
 const pi = Math.PI;
-const goldenRatio = (1 + 5**0.5)/2;
-const gRR = 1/goldenRatio;
+const gR = (1 + 5**0.5)/2; //golden ratio
+const gRR = 1/gR; //golden ratio reciprocal
 
 //storage for the dodecahedron and line data
 const dodeCoords = [[1, 1, 1], [1, -1, 1], [-1, 1, 1], [-1, -1, 1], [1, 1, -1], [1, -1, -1], [-1, 1, -1], [-1, -1,- 1],
@@ -13,9 +13,18 @@ const dodeLines = [[0, 8], [0, 12], [0, 16], [1, 9], [1, 14], [1, 16], [2, 8], [
 //storage for the cube coord and line data
 const cubeCoords = [[2,2,2],[-2,2,2],[2,-2,2],[2,2,-2],[-2,-2,2],[-2,2,-2],[2,-2,-2],[-2,-2,-2]];
 const cubeLines = [[4,1],[1,0],[0,2],[2,4],[4,7],[2,6],[0,3],[1,5],[6,7],[7,5],[5,3],[3,6]];
+
 //storage for the tetrahedron coord and line data
 const tetraCoords = [[1,0,-1/(2**0.5)],[-1,0,-1/(2**0.5)],[0,1,1/(2**0.5)],[0,-1,1/(2**0.5)]];
 const tetraLines = [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]];
+
+//storage for the octahedron coord and line data
+const octaCoords = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]];
+const octaLines = [[0, 2], [0, 3], [0, 4], [0, 5], [1, 2], [1, 3], [1, 4], [1, 5], [2, 4], [2, 5], [3, 4], [3, 5]];
+
+//storage for the icosahedron coord and line data
+const icosaCoords = [[gR, 1, 0], [-gR, 1, 0], [gR, -1, 0], [-gR, -1, 0], [1, 0, gR], [-1, 0, gR], [1, 0, -gR], [-1, 0, -gR], [0, gR, 1], [0, -gR, 1], [0, gR, -1], [0, -gR, -1]];
+const icosaLines = [[0, 2], [0, 4], [0, 6], [0, 8], [0, 10], [1, 3], [1, 5], [1, 7], [1, 8], [1, 10], [2, 4], [2, 6], [2, 9], [2, 11], [3, 5], [3, 7], [3, 9], [3, 11], [4, 5], [4, 8], [4, 9], [5, 8], [5, 9], [6, 7], [6, 10], [6, 11], [7, 10], [7, 11], [8, 10], [9, 11]];
 
 let coords = [[2,2,2],[-2,2,2],[2,-2,2],[2,2,-2],[-2,-2,2],[-2,2,-2],[2,-2,-2],[-2,-2,-2]];
 let lines = [[4,1],[1,0],[0,2],[2,4],[4,7],[2,6],[0,3],[1,5],[6,7],[7,5],[5,3],[3,6]];
@@ -63,6 +72,20 @@ function tetraSelect() {
 function dodeSelect() {
     coords = arrCopy(dodeCoords);
     lines = arrCopy(dodeLines);
+    render(coords);
+}
+
+//selects the octahedron as the working shape
+function octaSelect() {
+    coords = arrCopy(octaCoords);
+    lines = arrCopy(octaLines);
+    render(coords);
+}
+
+//selects the icosahedron as the working shape
+function icosaSelect() {
+    coords = arrCopy(icosaCoords);
+    lines = arrCopy(icosaLines);
     render(coords);
 }
 
