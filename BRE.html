@@ -9,16 +9,24 @@
         <canvas id="mainCanvas"></canvas>
 
         <div id="interaction">
-            <button onclick="perspectiveChange()">Perspective on/off</button>
             <button onclick="tetraSelect()">Tetrahedron</button>
             <button onclick="cubeSelect()">Cube</button>
             <button onclick="octaSelect()">Octahedron</button>
             <button onclick="dodeSelect()">Dodecahedron</button>
             <button onclick="icosaSelect()">Icosahedron</button>
             <br>
+            <button onclick="hypCubeSelect()">Hyper Cube</button>
+            <br>
             <button onclick="doRotYZ()">yz-plane 15 deg</button>
-            <button onclick="doRotXZ()">xz-plane 15 deg</button>
+            <button onclick="doRotXZ()">zx-plane 15 deg</button>
             <button onclick="doRotXY()">xy-plane 15 deg</button>
+            <br>
+            <button onclick="doRotXW()">xw-plane 15 deg</button>
+            <button onclick="doRotYW()">xw-plane 15 deg</button>
+            <button onclick="doRotZW()">xw-plane 15 deg</button>
+            <br>
+            <button onclick="perspectiveChange()">Perspective on/off</button>
+            <button onclick="wPerspExagOnOff()">Exagerate 4D Perspective on/off</button>
         </div>
 
         <div id="info">
@@ -30,14 +38,7 @@
             const canvas = document.getElementById("mainCanvas");
             let ctx = canvas.getContext("2d");
             render(coords);
-            canvas.addEventListener('mousemove', function(evt) {
-                const bm = biggestMag(coords);
-                const canDist = 2*bm;
-                const mp = getMousePos(canvas, evt);
-                const canCenX = document.getElementById("mainCanvas").width/2;
-                const canCenY = document.getElementById("mainCanvas").height/2;
-                turnPoints(coords, mp[0]-canCenX, mp[1]-canCenY, canDist);
-            }, false);
+            canvas.addEventListener('mousemove', mouseMove, false);
         </script>
 
     </body>
