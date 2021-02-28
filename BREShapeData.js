@@ -2,9 +2,6 @@
 const pi = Math.PI;
 const gR = (1 + 5**0.5)/2; //golden ratio
 const gRR = 1/gR; //golden ratio reciprocal
-const rotAngle = pi/12;
-let wPerspExagOn = true;
-const wPerspExag = 3.5;
 
 //storage for the dodecahedron and line data
 const dodeCoords = [[1, 1, 1], [1, -1, 1], [-1, 1, 1], [-1, -1, 1], [1, 1, -1], [1, -1, -1], [-1, 1, -1], [-1, -1,- 1],
@@ -34,85 +31,6 @@ const icosaLines = [[0, 2], [0, 4], [0, 6], [0, 8], [0, 10], [1, 3], [1, 5], [1,
 const hypCubeCoords = [[2,-2,2,2], [2,2,2,2], [-2,2,2,2], [-2,-2,2,2], [2,-2,-2,2], [2,2,-2,2], [-2,2,-2,2], [-2,-2,-2,2], [2,-2,2,-2], [2,2,2,-2], [-2,2,2,-2], [-2,-2,2,-2], [2,-2,-2,-2], [2,2,-2,-2], [-2,2,-2,-2], [-2,-2,-2,-2]];
 const hypCubeLines = [[0, 1], [0, 3], [0, 4], [0, 8], [1, 2], [1, 5], [1, 9], [2, 3], [2, 6], [2, 10], [3, 7], [3, 11], [4, 5], [4, 7], [4, 12], [5, 6], [5, 13], [6, 7], [6, 14], [7, 15], [8, 9], [8, 11], [8, 12], [9, 10], [9, 13], [10, 11], [10, 14], [11, 15], [12, 13], [12, 15], [13, 14], [14, 15]];
 
-let coords = [[2,2,2],[-2,2,2],[2,-2,2],[2,2,-2],[-2,-2,2],[-2,2,-2],[2,-2,-2],[-2,-2,-2]];
-let lines = [[4,1],[1,0],[0,2],[2,4],[4,7],[2,6],[0,3],[1,5],[6,7],[7,5],[5,3],[3,6]];
-
-
-let perspectiveEnabled = true; //This will decide whether or not to use perspective during rendering
-
-function perspectiveChange() {
-    if (perspectiveEnabled == false) {
-        perspectiveEnabled = true;
-    }
-    else if (perspectiveEnabled == true) {
-        perspectiveEnabled = false;
-    }
-    render(coords);
-}
-
-function wPerspExagOnOff() {
-    if (wPerspExagOn == false) {
-        wPerspExagOn = true;
-    }
-    else if (wPerspExagOn == true) {
-        wPerspExagOn = false;
-    }
-    render(coords);
-}
-
-let followEnabled = true; //This will let the shape keep facing the mouse curser
-
-function followChange() {
-    if (followEnabled == false) {
-        followEnabled = true;
-    }
-    else if (followEnabled == true) {
-        followEnabled = false;
-    }
-    render(coords);
-}
-
-//selects the cube as the working shape
-function cubeSelect() {
-    coords = arrCopy(cubeCoords);
-    lines = arrCopy(cubeLines);
-    render(coords);
-}
-
-//selects the tetrahedron as the working shape
-function tetraSelect() {
-    coords = arrCopy(tetraCoords);
-    lines = arrCopy(tetraLines);
-    render(coords);
-}
-
-//selects the dodecahedron as the working shape
-function dodeSelect() {
-    coords = arrCopy(dodeCoords);
-    lines = arrCopy(dodeLines);
-    render(coords);
-}
-
-//selects the octahedron as the working shape
-function octaSelect() {
-    coords = arrCopy(octaCoords);
-    lines = arrCopy(octaLines);
-    render(coords);
-}
-
-//selects the icosahedron as the working shape
-function icosaSelect() {
-    coords = arrCopy(icosaCoords);
-    lines = arrCopy(icosaLines);
-    render(coords);
-}
-
-//selects the hypercube as the working shape
-function hypCubeSelect() {
-    coords = arrCopy(hypCubeCoords);
-    lines = arrCopy(hypCubeLines);
-    render(coords);
-}
 
 //returns a copy of an array
 function arrCopy(arr){
@@ -178,38 +96,6 @@ function vecCross(vec1, vec2) {
     return [vec1[1]*vec2[2]-vec1[2]*vec2[1], vec1[2]*vec2[0]-vec1[0]*vec2[2], vec1[0]*vec2[1]-vec1[1]*vec2[0]];
 }
 
-//returns array with [innerHeight, innerWidth]
-function getViewSizes() {
-    winHeight = window.innerHeight;
-    winWidth = window.innerWidth;
-}
-
-
-//creates canvas and scales to the best fit
-function scaleCanvas() {
-    const scale = 1;
-    document.getElementById("mainCanvas").height = scale*window.innerHeight;
-    document.getElementById("mainCanvas").width = scale*window.innerWidth;
-}
-
-
-//function that does everything that needs to be done after a window resize
-function windowResize() {
-    scaleCanvas()
-    render(coords)
-}
-window.addEventListener('resize', windowResize);
-
-
-function biggestMag(coords) {
-    let hold = 0;
-    for (let i = 0; i < coords.length; i++) {
-        if (vecMag(coords[i]) > hold) {
-            hold = vecMag(coords[i]);
-        }
-    }
-    return hold;
-}
 
 //Takes coorda and rotates them in the yz-plane
 function rotYZ(coords, theta) {
@@ -220,10 +106,7 @@ function rotYZ(coords, theta) {
         coords[i][2] = y*Math.sin(theta) + z*Math.cos(theta);
     }
 }
-function doRotYZ() {
-    rotYZ(coords, rotAngle);
-    render(coords);
-}
+
 
 //Takes coorda and rotates them in the xz-plane
 function rotXZ(coords, theta) {
@@ -234,10 +117,7 @@ function rotXZ(coords, theta) {
         coords[i][2] = x*Math.sin(theta) + z*Math.cos(theta);
     }
 }
-function doRotXZ() {
-    rotXZ(coords, rotAngle);
-    render(coords);
-}
+
 
 //Takes coorda and rotates them in the xz-plane
 function rotXY(coords, theta) {
@@ -248,10 +128,7 @@ function rotXY(coords, theta) {
         coords[i][1] = x*Math.sin(theta) + y*Math.cos(theta);
     }
 }
-function doRotXY() {
-    rotXY(coords, rotAngle);
-    render(coords);
-}
+
 
 //Takes coords and rotates them in the xw-plane
 function rotXW(coords, theta) {
@@ -262,12 +139,7 @@ function rotXW(coords, theta) {
         coords[i][3] = x*Math.sin(theta) + w*Math.cos(theta);
     }
 }
-function doRotXW() {
-    if (coords[0].length == 4) {
-        rotXW(coords, rotAngle);
-        render(coords);
-    }
-}
+
 
 //Takes coords and rotates them in the yw-plane
 function rotYW(coords, theta) {
@@ -278,12 +150,7 @@ function rotYW(coords, theta) {
         coords[i][3] = y*Math.sin(theta) + w*Math.cos(theta);
     }
 }
-function doRotYW() {
-    if (coords[0].length == 4) {
-        rotYW(coords, rotAngle);
-        render(coords);
-    }
-}
+
 
 //Takes coords and rotates them in the yw-plane
 function rotZW(coords, theta) {
@@ -294,176 +161,9 @@ function rotZW(coords, theta) {
         coords[i][3] = z*Math.sin(theta) + w*Math.cos(theta);
     }
 }
-function doRotZW() {
-    if (coords[0].length == 4) {
-        rotZW(coords, rotAngle);
-        render(coords);
-    }
-}
-
-//Takes the coords and scales it to fit the canvas
-function scaleCoords(coords, scalePerc) {
-    //console.log(coords)
-    let hold = arrCopy(coords);
-    //console.log(hold)
-    let hbm = biggestMag(hold);
-    //console.log(hbm)
-    const canHeight = document.getElementById("mainCanvas").height;
-    const canWidth = document.getElementById("mainCanvas").width;
-    const smallerDim = (canHeight < canWidth) ? canHeight : canWidth;
-    //console.log(smallerDim)
-    const scale = (scalePerc*smallerDim/2)/hbm;
-    //console.log(scale)
-        for (let i = 0; i < hold.length; i++){
-            hold[i] = vecScale(scale, hold[i]);
-        }
-    //console.log(hold)
-    return hold;
-}
 
 
-//checks for perspective and returns new scaled coordinates
-//canDist is the distance from (0,0,0) to the center of the canvas
-//eyeDist is distance from the center of the canvas to the eye
-//the number*w exaggerates the 4D perspective
-function setPersp(coords, canDist, eyeDist) {
-    let hold = [];
-    if (perspectiveEnabled == false) {
-        for (let i = 0; i < coords.length; i++){
-            hold.push(coords[i]);
-        }
-    }
-    else if (perspectiveEnabled == true) {
-        for (let i = 0; i < coords.length; i++){
-            let rastCoord = [];
-            let x = coords[i][0];
-            let y = coords[i][1];
-            let z = coords[i][2];
-            let tz = (canDist - z)/(canDist + eyeDist - z);
-            let tw = 0;
-            if (coords[i].length == 4 && wPerspExagOn == true) {
-                w = coords[i][3]
-                tw = (canDist - wPerspExag*w)/(canDist + eyeDist - wPerspExag*w);
-            } else if (coords[i].length == 4 && wPerspExagOn == false) {
-                w = coords[i][3]
-                tw = (canDist - w)/(canDist + eyeDist - w);
-            }
-            rastCoord.push(x*(1-tz-tw));
-            rastCoord.push(y*(1-tz-tw));
-            hold.push(rastCoord);
-        }
-    }
-    return hold;
-}
-
-
-//Takes the coord and line data and renders them to the canvas
-function render(coords){
-    const canCenX = document.getElementById("mainCanvas").width/2;
-    const canCenY = document.getElementById("mainCanvas").height/2;
-    //resizes coords so that they will fit the canvas nicely
-    let scaledCoords;
-    if (coords[0].length == 3) {
-        scaledCoords = scaleCoords(coords, 4);
-    }
-    else if (coords[0].length == 4) {
-        scaledCoords = scaleCoords(coords, 1.5);
-    }
-    if (perspectiveEnabled == false) {
-        scaledCoords = scaleCoords(coords, 0.95);
-    }
-    const bm = biggestMag(scaledCoords);
-    const eyeDist = bm;
-    const canDist = 4*bm;
-    let finCoords = setPersp(scaledCoords, canDist, eyeDist); //returns coords with possible perspective altering
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#FFFFFF";
-    for (let i = 0; i < lines.length; i++){
-        ctx.beginPath();
-        ctx.moveTo(canCenX + finCoords[lines[i][0]][0], canCenY + finCoords[lines[i][0]][1]);
-        ctx.lineTo(canCenX + finCoords[lines[i][1]][0], canCenY + finCoords[lines[i][1]][1]);
-        ctx.stroke();
-    }
-}
-
-//Takes the coord and line data and renders them to the canvas
-function trender(coords){
-    const canCenX = document.getElementById("mainCanvas").width/2;
-    const canCenY = document.getElementById("mainCanvas").height/2;
-    const bm = biggestMag(coords);
-    const eyeDist = 2*bm;
-    const canDist = 2*bm;
-    let perspCoords = setPersp(coords, canDist, eyeDist); //returns coords with possible perspective altering
-    let finCoords = scaleCoords(perspCoords, 0.95); //resizes coords so that they will fit the canvas nicely
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#FFFFFF";
-    for (let i = 0; i < lines.length; i++){
-        ctx.beginPath();
-        ctx.moveTo(canCenX + finCoords[lines[i][0]][0], canCenY + finCoords[lines[i][0]][1]);
-        ctx.lineTo(canCenX + finCoords[lines[i][1]][0], canCenY + finCoords[lines[i][1]][1]);
-        ctx.stroke();
-    }
-}
-
-
-//Takes a point on the canvas, returns new set of unit vectors, scale can change how big the canvas is relative to the shape (needs implementing)
-function turnUnits(px, py, canDist, scale) {
-    const pVec = [scale*px, scale*py, canDist]; //vector of mouse pointer (scale will go here if needs be)
-    const pMag = vecMag(pVec); //Finds magnitude
-    const kuVec = vecScale((1/pMag), pVec); //Turns pVec into a unit vector. This is the same as the k unit vector due to the rotation point being (0,0,0)
-    const kjCross = vecCross(kuVec, [0,1,0]);
-    //const kjCross = vecCross([0,1,0], kuVec);
-    const kjcMag = vecMag(kjCross);
-    const iuVec = vecScale((-1/kjcMag), kjCross);
-    const juVec = vecCross(kuVec, iuVec);
-    //const juVec = vecCross(iuVec, kuVec);
-    return [iuVec, juVec, kuVec];
-}
-
-//Takes a coordinate and a set of unit vectors, rebuilds in the new basis
-function turnCoord(coord, units) {
-    const nx = vecScale(coord[0], units[0]);
-    const ny = vecScale(coord[1], units[1]);
-    const nz = vecScale(coord[2], units[2]);
-    let hold = vecAdd(vecAdd(nx, ny), nz);
-    if (coord.length == 4) {
-        hold.push(coord[3]);
-        return hold;
-    }
-    else {
-        return hold;
-    }
-}
-
-function turnPoints(coords, px, py, canDist) {
-    const units = turnUnits(px, py, canDist, 1/100);
-    let hold = arrCopy(coords);
-    for (let i = 0; i < hold.length; i++){
-        hold[i] = turnCoord(hold[i], units)
-    }
-    render(hold)
-}
-
-function testMouseFollow(canvas, coords, evt) {
-    const bm = biggestMag(coords);
-    const canDist = 2*bm;
-    const mp = getMousePos(canvas, evt);
-    const canCenX = document.getElementById("mainCanvas").width/2;
-    const canCenY = document.getElementById("mainCanvas").height/2;
-    turnPoints(coords, mp[0] , mp[1] , canDist);
-}
-
-//returns object with mouse position
-function getMousePos(canvas, evt) {
-        var rect = canvas.getBoundingClientRect();
-        return [evt.clientX - rect.left, evt.clientY - rect.top];
-      }
-
-function mouseMove(evt) {
-    const bm = biggestMag(coords);
-    const canDist = 2*bm;
-    const mp = getMousePos(canvas, evt);
-    const canCenX = document.getElementById("mainCanvas").width/2;
-    const canCenY = document.getElementById("mainCanvas").height/2;
-    turnPoints(coords, mp[0]-canCenX, mp[1]-canCenY, canDist);
-}
+export const shapeData = {
+    "cubeCoords": arrCopy(cubeCoords),
+    "cubeLines": arrCopy(cubeLines)
+};

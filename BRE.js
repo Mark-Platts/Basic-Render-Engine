@@ -2,12 +2,13 @@
 const pi = Math.PI;
 const gR = (1 + 5**0.5)/2; //golden ratio
 const gRR = 1/gR; //golden ratio reciprocal
-const rotAngle = pi/12;
+const rotAngle = pi/24;
 let wPerspExagOn = true;
 const wPerspExag = 3.5;
+let lastMousePos = [0,0];
 
 //storage for the dodecahedron and line data
-const dodeCoords = [[1, 1, 1], [1, -1, 1], [-1, 1, 1], [-1, -1, 1], [1, 1, -1], [1, -1, -1], [-1, 1, -1], [-1, -1,- 1],
+let dodeCoords = [[1, 1, 1], [1, -1, 1], [-1, 1, 1], [-1, -1, 1], [1, 1, -1], [1, -1, -1], [-1, 1, -1], [-1, -1,- 1],
     [0, (1 + gRR), (1 - gRR**2)],[0, -(1 + gRR), (1 - gRR**2)],[0, (1 + gRR), -(1 - gRR**2)],[0, -(1 + gRR), -(1 - gRR**2)],
     [(1 + gRR), (1 - gRR**2), 0],[-(1 + gRR), (1 - gRR**2), 0],[(1 + gRR), -(1 - gRR**2), 0],[-(1 + gRR), -(1 - gRR**2), 0],
     [(1 - gRR**2), 0, (1 + gRR)],[-(1 - gRR**2), 0, (1 + gRR)],[(1 - gRR**2), 0, -(1 + gRR)],[-(1 - gRR**2), 0, -(1 + gRR)]];
@@ -18,7 +19,7 @@ const cubeCoords = [[2,2,2],[-2,2,2],[2,-2,2],[2,2,-2],[-2,-2,2],[-2,2,-2],[2,-2
 const cubeLines = [[4,1],[1,0],[0,2],[2,4],[4,7],[2,6],[0,3],[1,5],[6,7],[7,5],[5,3],[3,6]];
 
 //storage for the tetrahedron coord and line data
-const tetraCoords = [[1,0,-1/(2**0.5)],[-1,0,-1/(2**0.5)],[0,1,1/(2**0.5)],[0,-1,1/(2**0.5)]];
+let tetraCoords = [[1,0,-1/(2**0.5)],[-1,0,-1/(2**0.5)],[0,1,1/(2**0.5)],[0,-1,1/(2**0.5)]];
 const tetraLines = [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]];
 
 //storage for the octahedron coord and line data
@@ -26,13 +27,23 @@ const octaCoords = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0,
 const octaLines = [[0, 2], [0, 3], [0, 4], [0, 5], [1, 2], [1, 3], [1, 4], [1, 5], [2, 4], [2, 5], [3, 4], [3, 5]];
 
 //storage for the icosahedron coord and line data
-const icosaCoords = [[gR, 1, 0], [-gR, 1, 0], [gR, -1, 0], [-gR, -1, 0], [1, 0, gR], [-1, 0, gR], [1, 0, -gR], [-1, 0, -gR], [0, gR, 1], [0, -gR, 1], [0, gR, -1], [0, -gR, -1]];
+let icosaCoords = [[gR, 1, 0], [-gR, 1, 0], [gR, -1, 0], [-gR, -1, 0], [1, 0, gR], [-1, 0, gR], [1, 0, -gR], [-1, 0, -gR], [0, gR, 1], [0, -gR, 1], [0, gR, -1], [0, -gR, -1]];
 const icosaLines = [[0, 2], [0, 4], [0, 6], [0, 8], [0, 10], [1, 3], [1, 5], [1, 7], [1, 8], [1, 10], [2, 4], [2, 6], [2, 9], [2, 11], [3, 5], [3, 7], [3, 9], [3, 11], [4, 5], [4, 8], [4, 9], [5, 8], [5, 9], [6, 7], [6, 10], [6, 11], [7, 10], [7, 11], [8, 10], [9, 11]];
 
 //storage for the hypercube coord and line data
 //const hypCubeCoords = [[1,-1,1,1], [1,1,1,1], [-1,1,1,1], [-1,-1,1,1], [1,-1,-1,1], [1,1,-1,1], [-1,1,-1,1], [-1,-1,-1,1], [1,-1,1,-1], [1,1,1,-1], [-1,1,1,-1], [-1,-1,1,-1], [1,-1,-1,-1], [1,1,-1,-1], [-1,1,-1,-1], [-1,-1,-1,-1]];
 const hypCubeCoords = [[2,-2,2,2], [2,2,2,2], [-2,2,2,2], [-2,-2,2,2], [2,-2,-2,2], [2,2,-2,2], [-2,2,-2,2], [-2,-2,-2,2], [2,-2,2,-2], [2,2,2,-2], [-2,2,2,-2], [-2,-2,2,-2], [2,-2,-2,-2], [2,2,-2,-2], [-2,2,-2,-2], [-2,-2,-2,-2]];
 const hypCubeLines = [[0, 1], [0, 3], [0, 4], [0, 8], [1, 2], [1, 5], [1, 9], [2, 3], [2, 6], [2, 10], [3, 7], [3, 11], [4, 5], [4, 7], [4, 12], [5, 6], [5, 13], [6, 7], [6, 14], [7, 15], [8, 9], [8, 11], [8, 12], [9, 10], [9, 13], [10, 11], [10, 14], [11, 15], [12, 13], [12, 15], [13, 14], [14, 15]];
+
+//storage for the hTetra coord and line data
+//let hTetraCoords = [[2,0,0,0],[0,2,0,0],[0,0,2,0],[0,0,0,2],[gR,gR,gR,gR]];
+//let hTetraCoords = [[10**(-0.5),6**(-0.5),3**(-0.5),1],[10**(-0.5),6**(-0.5),3**(-0.5),-1],[10**(-0.5),6**(-0.5),-2*(3**(-0.5)),0],[10**(-0.5),-1*(3/2)**0.5,0,0],[-2*(2/5)**0.5,0,0,0]];
+let hTetraCoords = [[1,1,1,-1*(5**(-0.5))],[1,-1,-1,-1*(5**(-0.5))],[-1,1,-1,-1*(5**(-0.5))],[-1,-1,1,-1*(5**(-0.5))],[0,0,0,4*(5**(-0.5))]];
+const hTetraLines = [[0,1],[0,2],[0,3],[0,4],[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]];
+
+//storage for the hypercube coord and line data
+let hOctaCoords = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1],[-1,0,0,0],[0,-1,0,0],[0,0,-1,0],[0,0,0,-1]];
+const hOctaLines = [[0, 1], [0, 2], [0, 3], [0, 5], [0, 6], [0, 7], [1, 2], [1, 3], [1, 4], [1, 6], [1, 7], [2, 3], [2, 4], [2, 5], [2, 7], [3, 4], [3, 5], [3, 6], [4, 5], [4, 6], [4, 7], [5, 6], [5, 7], [6, 7]];
 
 let coords = [[2,2,2],[-2,2,2],[2,-2,2],[2,2,-2],[-2,-2,2],[-2,2,-2],[2,-2,-2],[-2,-2,-2]];
 let lines = [[4,1],[1,0],[0,2],[2,4],[4,7],[2,6],[0,3],[1,5],[6,7],[7,5],[5,3],[3,6]];
@@ -114,11 +125,34 @@ function hypCubeSelect() {
     render(coords);
 }
 
+//selects the hypercube as the working shape
+function hTetraSelect() {
+    coords = arrCopy(hTetraCoords);
+    lines = arrCopy(hTetraLines);
+    render(coords);
+}
+
+//selects the hypercube as the working shape
+function hOctaSelect() {
+    coords = arrCopy(hOctaCoords);
+    lines = arrCopy(hOctaLines);
+    render(coords);
+}
+
 //returns a copy of an array
 function arrCopy(arr){
     let hold = [];
     for (let i = 0; i < arr.length; i++){
-        hold.push(arr[i]);
+        if (Array.isArray(arr[i])) {
+            hold2 = [];
+            for (let j = 0; j < arr[i].length; j++) {
+                hold2.push(arr[i][j]);
+            }
+            hold.push(hold2);
+        }
+        else {
+            hold.push(arr[i]);
+        }
     }
     return hold;
 }
@@ -224,6 +258,10 @@ function doRotYZ() {
     rotYZ(coords, rotAngle);
     render(coords);
 }
+function undoRotYZ() {
+    rotYZ(coords, -1*rotAngle);
+    render(coords);
+}
 
 //Takes coorda and rotates them in the xz-plane
 function rotXZ(coords, theta) {
@@ -236,6 +274,10 @@ function rotXZ(coords, theta) {
 }
 function doRotXZ() {
     rotXZ(coords, rotAngle);
+    render(coords);
+}
+function undoRotXZ() {
+    rotXZ(coords, -1*rotAngle);
     render(coords);
 }
 
@@ -252,6 +294,10 @@ function doRotXY() {
     rotXY(coords, rotAngle);
     render(coords);
 }
+function undoRotXY() {
+    rotXY(coords, -1*rotAngle);
+    render(coords);
+}
 
 //Takes coords and rotates them in the xw-plane
 function rotXW(coords, theta) {
@@ -265,6 +311,12 @@ function rotXW(coords, theta) {
 function doRotXW() {
     if (coords[0].length == 4) {
         rotXW(coords, rotAngle);
+        render(coords);
+    }
+}
+function undoRotXW() {
+    if (coords[0].length == 4) {
+        rotXW(coords, -1*rotAngle);
         render(coords);
     }
 }
@@ -284,6 +336,12 @@ function doRotYW() {
         render(coords);
     }
 }
+function undoRotYW() {
+    if (coords[0].length == 4) {
+        rotYW(coords, -1*rotAngle);
+        render(coords);
+    }
+}
 
 //Takes coords and rotates them in the yw-plane
 function rotZW(coords, theta) {
@@ -297,6 +355,12 @@ function rotZW(coords, theta) {
 function doRotZW() {
     if (coords[0].length == 4) {
         rotZW(coords, rotAngle);
+        render(coords);
+    }
+}
+function undoRotZW() {
+    if (coords[0].length == 4) {
+        rotZW(coords, -1*rotAngle);
         render(coords);
     }
 }
@@ -364,16 +428,16 @@ function render(coords){
     //resizes coords so that they will fit the canvas nicely
     let scaledCoords;
     if (coords[0].length == 3) {
-        scaledCoords = scaleCoords(coords, 4);
+        scaledCoords = scaleCoords(coords, 3); //was 4
     }
     else if (coords[0].length == 4) {
-        scaledCoords = scaleCoords(coords, 1.5);
+        scaledCoords = scaleCoords(coords, 2); //was 1.5
     }
     if (perspectiveEnabled == false) {
         scaledCoords = scaleCoords(coords, 0.95);
     }
     const bm = biggestMag(scaledCoords);
-    const eyeDist = bm;
+    const eyeDist = 1.5*bm;
     const canDist = 4*bm;
     let finCoords = setPersp(scaledCoords, canDist, eyeDist); //returns coords with possible perspective altering
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -391,8 +455,8 @@ function trender(coords){
     const canCenX = document.getElementById("mainCanvas").width/2;
     const canCenY = document.getElementById("mainCanvas").height/2;
     const bm = biggestMag(coords);
-    const eyeDist = 2*bm;
-    const canDist = 2*bm;
+    const eyeDist = bm;
+    const canDist = 4*bm;
     let perspCoords = setPersp(coords, canDist, eyeDist); //returns coords with possible perspective altering
     let finCoords = scaleCoords(perspCoords, 0.95); //resizes coords so that they will fit the canvas nicely
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -448,6 +512,7 @@ function testMouseFollow(canvas, coords, evt) {
     const bm = biggestMag(coords);
     const canDist = 2*bm;
     const mp = getMousePos(canvas, evt);
+    lastMousePos = mp;
     const canCenX = document.getElementById("mainCanvas").width/2;
     const canCenY = document.getElementById("mainCanvas").height/2;
     turnPoints(coords, mp[0] , mp[1] , canDist);
@@ -463,7 +528,168 @@ function mouseMove(evt) {
     const bm = biggestMag(coords);
     const canDist = 2*bm;
     const mp = getMousePos(canvas, evt);
+    lastMousePos = mp;
     const canCenX = document.getElementById("mainCanvas").width/2;
     const canCenY = document.getElementById("mainCanvas").height/2;
     turnPoints(coords, mp[0]-canCenX, mp[1]-canCenY, canDist);
 }
+
+function simulatedMouseMove(lastMousePos) {
+    const bm = biggestMag(coords);
+    const canDist = 2*bm;
+    const mp = lastMousePos
+    const canCenX = document.getElementById("mainCanvas").width/2;
+    const canCenY = document.getElementById("mainCanvas").height/2;
+    turnPoints(coords, mp[0]-canCenX, mp[1]-canCenY, canDist);
+}
+
+function resolveKeyPress(e) {
+    if (e.keyCode == 69){
+        doRotXY();
+    }
+    else if (e.keyCode == 81){
+        undoRotXY();
+    }
+    else if (e.keyCode == 87){
+        doRotYZ();
+    }
+    else if (e.keyCode == 83){
+        undoRotYZ();
+    }
+    else if (e.keyCode == 65){
+        doRotXZ();
+    }
+    else if (e.keyCode == 68){
+        undoRotXZ();
+    }
+    else if (e.keyCode == 74){
+        doRotXW();
+    }
+    else if (e.keyCode == 76){
+        undoRotXW();
+    }
+    else if (e.keyCode == 73){
+        doRotYW();
+    }
+    else if (e.keyCode == 75){
+        undoRotYW();
+    }
+    else if (e.keyCode == 85){
+        doRotZW();
+    }
+    else if (e.keyCode == 79){
+        undoRotZW();
+    }
+    simulatedMouseMove(lastMousePos);
+}
+document.addEventListener('keydown', resolveKeyPress);
+
+
+
+//generators for more complicated hypershapes
+
+//Takes an array and returns an array of all possible sign mixtures for the original array
+function arrSignMix(arr) {
+    let hold = [];
+    hold.push(arr);
+    const order = arr.length;
+    for (let i = 1; i < 2**order; i++) {
+        let mix = i.toString(2);
+        console.log(mix)
+        let arr2 = arrCopy(arr);
+        for (let j = mix.length-1; j >= 0; j--) {
+            arr2[mix.length-1-j] *= -2*parseInt(mix[j])+1;
+        }
+        console.log(arr2)
+        hold.push(arr2);
+    }
+    return hold;
+}
+
+//Takes a variable and array, puts the variable in each place of the array
+function allInsert(v, arr) {
+    let hold = [];
+    for (let i = 0; i < (arr.length + 1); i++) {
+        arr2 = arrCopy(arr);
+        arr2.splice(i, 0, v);
+        hold.push(arr2)
+    }
+    return hold;
+}
+
+//Takers a variable and does allInsert to arrays within an array
+function arrAllInsert(v, arr) {
+    let hold = [];
+    for (let i = 0; i < (arr.length); i++) {
+        hold = hold.concat(allInsert(v, arr[i]));
+    }
+    return hold;
+}
+
+//Tests whether two arrays contain the same values and order
+function arrEqual(arr1, arr2) {
+    let hold = true;
+    for (let i = 0; i < (arr1.length); i++) {
+        if (arr1[i] != arr2[i]) {
+            hold = false;
+            break;
+        }
+    }
+    return hold;
+}
+
+//Removed duplicates from an array of arrays
+function arrRemDups(arr) {
+    let arrC = arrCopy(arr);
+    let hold = [];
+    while (arrC.length > 0) {
+        let testVal = arrC.shift();
+        let doCopy = true;
+        for (let i = 0; i < (arrC.length); i++) {
+            if (arrEqual(testVal, arrC[i])) {
+                doCopy = false;
+            }
+        }
+        if (doCopy == true) {
+            hold.push(testVal)
+        }
+    }
+    return hold;
+}
+
+//permuter
+function permute(arr) {
+    let arrC = arrCopy(arr);
+    let hold = [];
+    hold = allInsert(arrC.shift(), hold);
+    for (let i = 0; i < (arrC.length); i++) {
+        hold = arrAllInsert(arrC[i], hold);
+    }
+    return arrRemDups(hold);
+}
+
+//store for even permutations of a 4D array
+const evenPerms4 = [[0,1,2,3],[0,2,3,1],[0,3,1,2],[1,0,3,2],[1,2,0,3],[1,3,2,0],[2,0,1,3],[2,1,3,0],[2,3,0,1],[3,0,2,1],[3,1,0,2],[3,2,1,0]];
+
+//Takes a 4D array and returns all even permutations
+function evenPerm4D(arr) {
+    let hold = [];
+    for (let i = 0; i < (evenPerms4.length); i++) {
+        let arrHold = [0,0,0,0];
+        arrHold[0] = arr[evenPerms4[i][0]];
+        arrHold[1] = arr[evenPerms4[i][1]];
+        arrHold[2] = arr[evenPerms4[i][2]];
+        arrHold[3] = arr[evenPerms4[i][3]];
+        hold.push(arrHold);
+    }
+    return hold;
+}
+
+
+
+//pre-rotations to make shapes nicer to display
+rotYZ(tetraCoords, pi/3);
+rotYZ(dodeCoords, -1*pi/6);
+rotYZ(icosaCoords, -1*pi/8);
+rotXY(hTetraCoords, -1*pi/4);
+rotYZ(hTetraCoords, 7.5*pi/24);
