@@ -139,6 +139,27 @@ function hOctaSelect() {
     render(coords);
 }
 
+//selects the hyper diamond as the working shape
+function hDiamondSelect() {
+    coords = arrCopy(hDiamondCoords);
+    lines = arrCopy(hDiamondLines);
+    render(coords);
+}
+
+//selects the hexacosichoron as the working shape
+function hDodeSelect() {
+    coords = arrCopy(hDodeCoords);
+    lines = arrCopy(hDodeLines);
+    render(coords);
+}
+
+//selects the heconicosichoron as the working shape
+function hIcoSelect() {
+    coords = arrCopy(hIcoCoords);
+    lines = arrCopy(hIcoLines);
+    render(coords);
+}
+
 //returns a copy of an array
 function arrCopy(arr){
     let hold = [];
@@ -205,6 +226,50 @@ function vecScale(scale, vec) {
         hold.push(scale*vec[i]);
     }
     return hold;
+}
+
+//creates the distData: an array of arrays of the form [coord1 number, coord2 number, distance between then]
+function everyDist(coords) {
+    let holdEnd = [];
+    for (let i = 0; i < coords.length; i++) {
+        for (let j = 0; j < coords.length; j++) {
+            if (i < j) {
+                let hold = [];
+                hold.push(i);
+                hold.push(j);
+                hold.push(vecDist(coords[i], coords[j]));
+                holdEnd.push(hold);
+            }
+        }
+    }
+    return holdEnd;
+}
+
+//Takes the distData and returns the shortest length
+function findShortestLen(distData) {
+    let test = 10**100;
+    for (let i = 0; i < distData.length; i++) {
+        if (distData[i][2] < test) {
+            test = distData[i][2];
+        }
+    }
+    return test;
+}
+
+//Takes coordinates and returns which coordinate numbers should join (lineData)
+function coordsToLines(coords) {
+    let distData = everyDist(coords);
+    let smallestDist = findShortestLen(distData);
+    let holdEnd = [];
+    for (let i = 0; i < distData.length; i++) {
+        if (distData[i][2].toFixed(5) == smallestDist.toFixed(5)) {
+            let hold = [];
+            hold.push(distData[i][0]);
+            hold.push(distData[i][1]);
+            holdEnd.push(hold);
+        }
+    }
+    return holdEnd;
 }
 
 //returns the cross product of two vectors
@@ -682,10 +747,85 @@ function evenPerm4D(arr) {
         arrHold[3] = arr[evenPerms4[i][3]];
         hold.push(arrHold);
     }
-    return hold;
+    return arrRemDups(hold);
 }
 
+//24-cell (hyper diamond) generation
+const hDiaM = arrRemDups(arrSignMix([1,1,0,0]));
+let hDiamondCoords = [];
+for (let i = 0; i < (hDiaM.length); i++) {
+    hDiamondCoords = hDiamondCoords.concat(permute(hDiaM[i]));
+}
+hDiamondCoords = arrRemDups(hDiamondCoords);
+const hDiamondLines = coordsToLines(hDiamondCoords);
 
+
+//600-cell (hexacosichoron) generation
+const hDodeM1 = arrRemDups(arrSignMix([0,0,0,1]));
+let hDodeP1 = [];
+for (let i = 0; i < (hDodeM1.length); i++) {
+    hDodeP1 = hDodeP1.concat(permute(hDodeM1[i]));
+}
+const hDodeM2 = arrRemDups(arrSignMix([0.5,0.5,0.5,0.5]));
+
+const hDodeM3 = arrRemDups(arrSignMix([gR/2,1/2,1/(2*gR),0]));
+let hDodeP3 = [];
+for (let i = 0; i < (hDodeM3.length); i++) {
+    hDodeP3 = hDodeP3.concat(evenPerm4D(hDodeM3[i]));
+}
+
+let hDodeCoords = [];
+hDodeCoords = hDodeCoords.concat(hDodeP1, hDodeM2, hDodeP3);
+hDodeCoords = arrRemDups(hDodeCoords);
+const hDodeLines = coordsToLines(hDodeCoords);
+
+//120-cell (hecatonicosachoron)
+const hIcoM1 = arrRemDups(arrSignMix([0,0,2,2]));
+let hIcoP1 = [];
+for (let i = 0; i < (hIcoM1.length); i++) {
+    hIcoP1 = hIcoP1.concat(permute(hIcoM1[i]));
+}
+
+const hIcoM2 = arrRemDups(arrSignMix([1,1,1,5**0.5]));
+let hIcoP2 = [];
+for (let i = 0; i < (hIcoM2.length); i++) {
+    hIcoP2 = hIcoP2.concat(permute(hIcoM2[i]));
+}
+
+const hIcoM3 = arrRemDups(arrSignMix([gR**(-2),gR,gR,gR]));
+let hIcoP3 = [];
+for (let i = 0; i < (hIcoM3.length); i++) {
+    hIcoP3 = hIcoP3.concat(permute(hIcoM3[i]));
+}
+
+const hIcoM4 = arrRemDups(arrSignMix([gR**(-1),gR**(-1),gR**(-1),gR**2]));
+let hIcoP4 = [];
+for (let i = 0; i < (hIcoM4.length); i++) {
+    hIcoP4 = hIcoP4.concat(permute(hIcoM4[i]));
+}
+
+const hIcoM5 = arrRemDups(arrSignMix([0,gR**(-2),1,gR**2]));
+let hIcoP5 = [];
+for (let i = 0; i < (hIcoM5.length); i++) {
+    hIcoP5 = hIcoP5.concat(evenPerm4D(hIcoM5[i]));
+}
+
+const hIcoM6 = arrRemDups(arrSignMix([0,gR**(-1),gR,5**0.5]));
+let hIcoP6 = [];
+for (let i = 0; i < (hIcoM6.length); i++) {
+    hIcoP6 = hIcoP6.concat(evenPerm4D(hIcoM6[i]));
+}
+
+const hIcoM7 = arrRemDups(arrSignMix([gR**(-1),1,gR,2]));
+let hIcoP7 = [];
+for (let i = 0; i < (hIcoM7.length); i++) {
+    hIcoP7 = hIcoP7.concat(evenPerm4D(hIcoM7[i]));
+}
+
+let hIcoCoords = [];
+hIcoCoords = hIcoCoords.concat(hIcoP1, hIcoP2, hIcoP3, hIcoP4, hIcoP5, hIcoP6, hIcoP7);
+hIcoCoords = arrRemDups(hIcoCoords);
+const hIcoLines = coordsToLines(hIcoCoords);
 
 //pre-rotations to make shapes nicer to display
 rotYZ(tetraCoords, pi/3);
