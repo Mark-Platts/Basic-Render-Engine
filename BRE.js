@@ -6,6 +6,7 @@ const rotAngle = pi/24;
 let wPerspExagOn = true;
 const wPerspExag = 3.5;
 let lastMousePos = [0,0];
+let mouseFollow = true;
 
 //storage for the dodecahedron and line data
 let dodeCoords = [[1, 1, 1], [1, -1, 1], [-1, 1, 1], [-1, -1, 1], [1, 1, -1], [1, -1, -1], [-1, 1, -1], [-1, -1,- 1],
@@ -67,6 +68,16 @@ function wPerspExagOnOff() {
     }
     else if (wPerspExagOn == true) {
         wPerspExagOn = false;
+    }
+    render(coords);
+}
+
+function mouseFollowOnOff() {
+    if (mouseFollow == false) {
+        mouseFollow = true;
+    }
+    else if (mouseFollow == true) {
+        mouseFollow = false;
     }
     render(coords);
 }
@@ -565,12 +576,14 @@ function turnCoord(coord, units) {
 }
 
 function turnPoints(coords, px, py, canDist) {
-    const units = turnUnits(px, py, canDist, 1/100);
-    let hold = arrCopy(coords);
-    for (let i = 0; i < hold.length; i++){
-        hold[i] = turnCoord(hold[i], units)
+    if (mouseFollow) {
+        const units = turnUnits(px, py, canDist, 1/100);
+        let hold = arrCopy(coords);
+        for (let i = 0; i < hold.length; i++){
+            hold[i] = turnCoord(hold[i], units)
+        }
+        render(hold)
     }
-    render(hold)
 }
 
 function testMouseFollow(canvas, coords, evt) {

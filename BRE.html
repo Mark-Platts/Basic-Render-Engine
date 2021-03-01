@@ -3,42 +3,58 @@
     <head>
         <script src="BRE.js"></script>
         <link rel="stylesheet" href="BRE.css">
-        <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
 
         <canvas id="mainCanvas"></canvas>
 
         <div id="interaction">
-            <button onclick="tetraSelect()">Tetrahedron</button>
-            <button onclick="cubeSelect()">Cube</button>
-            <button onclick="octaSelect()">Octahedron</button>
-            <button onclick="dodeSelect()">Dodecahedron</button>
-            <button onclick="icosaSelect()">Icosahedron</button>
+            <p>3D Shapes:</p>
+            <div>
+                <button onclick="tetraSelect()">Tetrahedron</button>
+                <button onclick="cubeSelect()">Cube</button>
+                <button onclick="octaSelect()">Octahedron</button>
+                <button onclick="dodeSelect()">Dodecahedron</button>
+                <button onclick="icosaSelect()">Icosahedron</button>
+            </div>
             <br>
-            <button onclick="hTetraSelect()">Pentachoron</button>
-            <button onclick="hypCubeSelect()">Hyper Cube</button>
-            <button onclick="hOctaSelect()">Hexadecachoron</button>
-            <button onclick="hDiamondSelect()">Hyper Diamond</button>
-            <button onclick="hDodeSelect()">Hexacosichoron</button>
-            <button onclick="hIcoSelect()">Hecatonicosichoron</button>
+            <p>4D Shapes:</p>
+            <div>
+                <button onclick="hTetraSelect()">Pentachoron</button>
+                <button onclick="hypCubeSelect()">Hyper Cube</button>
+                <button onclick="hOctaSelect()">Hexadecachoron</button>
+                <button onclick="hDiamondSelect()">Hyper Diamond</button>
+                <button onclick="hDodeSelect()">Hexacosichoron</button>
+                <button onclick="hIcoSelect()">Hecatonicosichoron</button>
+            </div>
             <br>
-            <button onclick="doRotYZ()">yz-plane (W)</button>
-            <button onclick="undoRotYZ()">yz-plane reverse (S)</button>
-            <button onclick="doRotXZ()">zx-plane (A)</button>
-            <button onclick="undoRotXZ()">zx-plane reverse (D)</button>
-            <button onclick="doRotXY()">xy-plane (E)</button>
-            <button onclick="undoRotXY()">xy-plane reverse (Q)</button>
+            <p>3D Rotations:</p>
+            <div>
+                <button onclick="doRotYZ()">yz-plane (W)</button>
+                <button onclick="undoRotYZ()">yz-plane reverse (S)</button>
+                <button onclick="doRotXZ()">zx-plane (A)</button>
+                <button onclick="undoRotXZ()">zx-plane reverse (D)</button>
+                <button onclick="doRotXY()">xy-plane (E)</button>
+                <button onclick="undoRotXY()">xy-plane reverse (Q)</button>
+            </div>
             <br>
-            <button onclick="doRotXW()">xw-plane (J)</button>
-            <button onclick="undoRotXW()">xw-plane reverse (L)</button>
-            <button onclick="doRotYW()">yw-plane (I)</button>
-            <button onclick="undoRotYW()">yw-plane reverse (K)</button>
-            <button onclick="doRotZW()">zw-plane (U)</button>
-            <button onclick="undoRotZW()">zw-plane reverse (O)</button>
+            <p>4D Rotations:</p>
+            <div>
+                <button onclick="doRotXW()">xw-plane (J)</button>
+                <button onclick="undoRotXW()">xw-plane reverse (L)</button>
+                <button onclick="doRotYW()">yw-plane (I)</button>
+                <button onclick="undoRotYW()">yw-plane reverse (K)</button>
+                <button onclick="doRotZW()">zw-plane (U)</button>
+                <button onclick="undoRotZW()">zw-plane reverse (O)</button>
+            </div>
             <br>
-            <button onclick="perspectiveChange()">Perspective on/off</button>
-            <button onclick="wPerspExagOnOff()">Exagerate 4D Perspective on/off</button>
+            <p>Options:</p>
+            <div>
+                <button onclick="perspectiveChange()">Perspective on/off</button>
+                <button onclick="wPerspExagOnOff()">Exaggerate 4D Perspective on/off</button>
+                <button onclick="mouseFollowOnOff()">Mouse Follow on/off</button>
+            </div>
         </div>
 
         <div id="info">

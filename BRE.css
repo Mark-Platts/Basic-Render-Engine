@@ -5,6 +5,8 @@
 
 body {
     background-color: #110A08;
+    color: white;
+    font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
 canvas {
@@ -22,4 +24,9 @@ button {
     border: none;
     margin: 5px;
     padding: 5px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
   }
+
+#interaction * {
+    padding: 5px;
+}
