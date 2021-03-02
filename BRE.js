@@ -55,9 +55,11 @@ let perspectiveEnabled = true; //This will decide whether or not to use perspect
 function perspectiveChange() {
     if (perspectiveEnabled == false) {
         perspectiveEnabled = true;
+        document.getElementById("perspectiveChange").innerHTML = 'Perspective (P) ON';
     }
     else if (perspectiveEnabled == true) {
         perspectiveEnabled = false;
+        document.getElementById("perspectiveChange").innerHTML = 'Perspective (P) OFF';
     }
     render(coords);
 }
@@ -65,9 +67,11 @@ function perspectiveChange() {
 function wPerspExagOnOff() {
     if (wPerspExagOn == false) {
         wPerspExagOn = true;
+        document.getElementById("wPerspExagOnOff").innerHTML = 'Exaggerate 4D Perspective (X) ON';
     }
     else if (wPerspExagOn == true) {
         wPerspExagOn = false;
+        document.getElementById("wPerspExagOnOff").innerHTML = 'Exaggerate 4D Perspective (X) OFF';
     }
     render(coords);
 }
@@ -75,9 +79,11 @@ function wPerspExagOnOff() {
 function mouseFollowOnOff() {
     if (mouseFollow == false) {
         mouseFollow = true;
+        document.getElementById("mouseFollowOnOff").innerHTML = 'Mouse Follow (M) ON';
     }
     else if (mouseFollow == true) {
         mouseFollow = false;
+        document.getElementById("mouseFollowOnOff").innerHTML = 'Mouse Follow (M) OFF';
     }
     render(coords);
 }
@@ -658,6 +664,16 @@ function resolveKeyPress(e) {
     else if (e.keyCode == 79){
         undoRotZW();
     }
+    else if (e.keyCode == 80){
+        perspectiveChange();
+    }
+    else if (e.keyCode == 88){
+        wPerspExagOnOff();
+    }
+    else if (e.keyCode == 77){
+        mouseFollowOnOff();
+    }
+
     simulatedMouseMove(lastMousePos);
 }
 document.addEventListener('keydown', resolveKeyPress);

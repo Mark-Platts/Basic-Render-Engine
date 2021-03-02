@@ -27,6 +27,6 @@ button {
     font-family: Georgia, 'Times New Roman', Times, serif;
   }
 
-#interaction * {
+#interaction *, #info * {
     padding: 5px;
 }
